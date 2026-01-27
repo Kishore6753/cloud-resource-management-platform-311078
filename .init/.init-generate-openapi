@@ -1,0 +1,4 @@
+{
+    "command": "npm install && node generate_openapi.js",
+    "working_directory": "/home/kavia/workspace/code-generation/cloud-resource-management-platform-311078/cloud_resource_manager_backend"
+}
