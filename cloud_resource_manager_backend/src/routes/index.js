@@ -4,6 +4,7 @@ const healthController = require('../controllers/health');
 const authRoutes = require('./auth');
 const meRoutes = require('./me');
 const organizationsRoutes = require('./organizations');
+const cloudAccountsRoutes = require('./cloudAccounts');
 
 const router = express.Router();
 
@@ -41,5 +42,6 @@ router.get('/', healthController.check.bind(healthController));
 router.use('/api/auth', authRoutes);
 router.use('/api/me', meRoutes);
 router.use('/api/organizations', organizationsRoutes);
+router.use('/api/cloud-accounts', cloudAccountsRoutes);
 
 module.exports = router;
