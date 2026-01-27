@@ -5,6 +5,8 @@ const authRoutes = require('./auth');
 const meRoutes = require('./me');
 const organizationsRoutes = require('./organizations');
 const cloudAccountsRoutes = require('./cloudAccounts');
+const resourcesRoutes = require('./resources');
+const discoveryRoutes = require('./discovery');
 
 const router = express.Router();
 
@@ -43,5 +45,7 @@ router.use('/api/auth', authRoutes);
 router.use('/api/me', meRoutes);
 router.use('/api/organizations', organizationsRoutes);
 router.use('/api/cloud-accounts', cloudAccountsRoutes);
+router.use('/api/resources', resourcesRoutes);
+router.use('/api/discovery', discoveryRoutes);
 
 module.exports = router;

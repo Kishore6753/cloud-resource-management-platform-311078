@@ -1,6 +1,7 @@
 const { pool, query } = require('../db');
 const { ApiError } = require('../utils/errors');
 const { encryptJson, decryptJson } = require('../utils/crypto');
+const resourceDiscoveryService = require('./resourceDiscovery');
 
 const PROVIDERS = ['aws', 'azure', 'gcp'];
 const DEFAULT_SYNC_FREQUENCY_MIN = 360; // minutes
@@ -640,7 +641,13 @@ class CloudAccountsService {
 
   /**
    * PUBLIC_INTERFACE
-   * Mock a sync run for a cloud account (updates status timestamps only).
+   * Trigger a mock sync for a cloud account.
+   *
+   * Updated behavior:
+   * - Runs a mock provider discovery job
+   * - Upserts discovered items into `resources`
+   * - Updates cloud_accounts sync_status/last_sync_at/next_sync_at
+   *
    * @param {string} orgId org id
    * @param {string} userId user id (for audit/attribution, future use)
    * @param {string} accountId cloud account id
@@ -653,33 +660,16 @@ class CloudAccountsService {
       throw new ApiError(400, 'Cloud account is disabled', 'CLOUD_ACCOUNT_DISABLED');
     }
 
-    // Mark running -> success (mock)
-    await query(
-      `UPDATE cloud_accounts
-       SET sync_status = 'running',
-           sync_error = NULL,
-           updated_at = NOW()
-       WHERE id = $1 AND organization_id = $2`,
+    const discovery = await resourceDiscoveryService.discoverForAccount(account, {
+      initiatedByUserId: userId,
+    });
+
+    const refreshed = await query(
+      'SELECT * FROM cloud_accounts WHERE id = $1 AND organization_id = $2',
       [accountId, orgId]
     );
 
-    await query(
-      `UPDATE cloud_accounts
-       SET sync_status = 'success',
-           last_sync_at = NOW(),
-           next_sync_at = NOW() + (sync_frequency || ' minutes')::interval,
-           sync_error = NULL,
-           updated_at = NOW()
-       WHERE id = $1 AND organization_id = $2`,
-      [accountId, orgId]
-    );
-
-    const refreshed = await query('SELECT * FROM cloud_accounts WHERE id = $1 AND organization_id = $2', [
-      accountId,
-      orgId,
-    ]);
-
-    return { cloudAccount: sanitizeCloudAccountRow(refreshed.rows[0]) };
+    return { cloudAccount: sanitizeCloudAccountRow(refreshed.rows[0]), discovery };
   }
 }
 

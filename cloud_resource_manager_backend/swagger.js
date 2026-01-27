@@ -26,6 +26,8 @@ const options = {
       { name: 'Users', description: 'User profile endpoints' },
       { name: 'Organizations', description: 'Organization and membership management' },
       { name: 'Cloud Accounts', description: 'Cloud account linking and credential management' },
+      { name: 'Resources', description: 'Resource inventory and detail endpoints' },
+      { name: 'Discovery', description: 'Mock provider resource discovery jobs' },
     ],
   },
   apis: ['./src/routes/*.js'],
