@@ -4,12 +4,30 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'My Express API',
-      version: '1.0.0',
-      description: 'A simple Express API documented with Swagger',
-    }
+      title: 'Cloud Resource Manager API',
+      version: '0.1.0',
+      description:
+        'Backend API for authentication, organization isolation, RBAC, and cloud resource management.',
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description:
+            'Provide an access token as: Authorization: Bearer <token>. Org-scoped endpoints also support X-Org-Id header.',
+        },
+      },
+    },
+    tags: [
+      { name: 'System', description: 'System and health endpoints' },
+      { name: 'Auth', description: 'Authentication and session management' },
+      { name: 'Users', description: 'User profile endpoints' },
+      { name: 'Organizations', description: 'Organization and membership management' },
+    ],
   },
-  apis: ['./src/routes/*.js'], // Path to the API docs
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
